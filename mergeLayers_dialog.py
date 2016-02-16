@@ -11,12 +11,12 @@ class mergeLayersDialog(QtGui.QDialog):
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
         locale = QtCore.QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(self.plugin_dir, 'i18n', 'mergeLayers_{}.qm'.format(locale))
+        locale_path = os.path.join(self.plugin_dir, 'i18n', "mergeLayers_{}.qm".format(locale))
         if os.path.exists(locale_path):
             self.translator = QtCore.QTranslator()
             self.translator.load(locale_path)
-            if QtCore.qVersion() > '4.3.3':
-               QtCore.QCoreApplication.installTranslator(self.translator)
+            QtCore.QCoreApplication.installTranslator(self.translator)
+
         self.NOMATCH  =  self.tr("<no match>")
 
         self.ui = Ui_mergeLayersDialogBase()
@@ -45,7 +45,6 @@ class mergeLayersDialog(QtGui.QDialog):
         sourceLyr = None
         targetLyr = None
         self.ui.matchTbl.setHorizontalHeaderLabels([sourceLyrName,targetLyrName])
-        self.ui.infoLbl.setText( self.tr( "Layer {0} will be added to layer {1}" ).format(sourceLyrName,targetLyrName))
 
         for lyr in self.layers:
             if lyr.name() == sourceLyrName:
@@ -65,6 +64,10 @@ class mergeLayersDialog(QtGui.QDialog):
             targetFields = [self.NOMATCH] + [f.name() for f in targetLyr.pendingFields() if f.type() == sourceType]
             targetFieldCbx = QtGui.QComboBox()
             targetFieldCbx.insertItems(0, targetFields)
+
+            if sourceName in targetFields:
+                targetFieldCbx.setCurrentIndex( targetFields.index(sourceName) )
+
             #populate the table
             self.ui.matchTbl.setCellWidget( rowIndex, 0, QtGui.QLabel(sourceName) )
             self.ui.matchTbl.setCellWidget( rowIndex, 1, targetFieldCbx )

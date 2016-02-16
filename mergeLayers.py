@@ -26,7 +26,6 @@ import resources_rc
 from mergeLayers_dialog import mergeLayersDialog
 import os.path
 
-
 class mergeLayers:
     def __init__(self, iface):
         # Save reference to the QGIS interface
@@ -36,13 +35,10 @@ class mergeLayers:
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(self.plugin_dir, 'i18n', 'mergeLayers_{}.qm'.format(locale))
-
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
-
-            if qVersion() > '4.3.3':
-                QCoreApplication.installTranslator(self.translator)
+            QCoreApplication.installTranslator(self.translator)
 
         # Create the dialog (after translation) and keep reference
         self.dlg = mergeLayersDialog(self.iface)

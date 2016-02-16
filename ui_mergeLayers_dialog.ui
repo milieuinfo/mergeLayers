@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>406</width>
-    <height>406</height>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Merge_Layers</string>
+   <string>Merge layers</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">

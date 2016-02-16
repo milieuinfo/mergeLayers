@@ -1,18 +1,12 @@
-#Add iso code for any locales you want to support here (space separated)
-# default is no locales
-LOCALES = du
-
-# If locales are enabled, set the name of the lrelease binary on your system. If
-# you have trouble compiling the translations, you may have to specify the full path to
-# lrelease
-#LRELEASE = lrelease
-#LRELEASE = lrelease-qt4
-
 # translation
+TRANSLATIONS = i18n/mergeLayers_nl.ts
+
 SOURCES = \
 	__init__.py \
 	mergeLayers.py mergeLayers_dialog.py
 
+FORMS = ui_mergeLayers_dialog.ui
+#----
 PLUGINNAME = mergeLayers
 
 PY_FILES = \
@@ -21,13 +15,13 @@ PY_FILES = \
 
 UI_FILES = ui_mergeLayers_dialog.py
 
-EXTRAS = metadata.txt images
+EXTRAS = metadata.txt images i18n
 
 RESOURCE_FILES = resources_rc.py
 
 PLUGIN_UPLOAD = $(c)/scripts/plugin_upload.py
 
-QGISDIR=.qgis2
+QGISDIR = .qgis2
 
 default: compile
 
@@ -40,7 +34,7 @@ compile: $(UI_FILES) $(RESOURCE_FILES)
 	#pyuic4 -o $@ $<
 	python C:\OSGeo4W64\apps\Python27\lib\site-packages\PyQt4\uic\pyuic.py -o $@ $<
 
-deploy: compile transcompile
+deploy: compile transup
 	# The deploy  target only works on unix like operating system where
 	# the Python plugin directory is located at:
 	# $HOME/$(QGISDIR)/python/plugins
@@ -50,7 +44,7 @@ deploy: compile transcompile
 	cp -vf $(UI_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(RESOURCE_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vfr $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
+	#cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 
 # The dclean target removes compiled python files from plugin directory
 # also deletes any .git entry
@@ -81,13 +75,13 @@ package: compile
 upload: zip
 	$(PLUGIN_UPLOAD) $(PLUGINNAME).zip
 
-transup:
-	@chmod +x scripts/update-strings.sh
-	@scripts/update-strings.sh $(LOCALES)
+#transup:
+#	@chmod +x scripts/update-strings.sh
+#	@scripts/update-strings.sh $(LOCALES)
 
-transcompile:
-	@chmod +x scripts/compile-strings.sh
-	@scripts/compile-strings.sh lrelease $(LOCALES)
+transup: 
+	pylupdate4 Makefile
+	lrelease ${TRANSLATIONS}
 
 transclean:
 	rm -f i18n/*.qm
