@@ -18,8 +18,8 @@ email=kaywarrie@gmail.com
 about=EN: Tool to merge 2 layers, combining attributables with diffrent names for the same property.
     NL: Tool om 2 lagen samen te voegen die een verschillende attribuutnamen hebben voor dezelfde eigenschap.
 
-tracker=https://github.com/
-repository=https://github.com/
+tracker=https://github.com/milieuinfo/mergeLayers/issues
+repository=https://github.com/milieuinfo/mergeLayers
 # End of mandatory metadata
 
 # Recommended items:
@@ -30,7 +30,7 @@ repository=https://github.com/
 # Tags are comma separated with spaces allowed
 tags=lne, merge, append, combine
 
-homepage=https://github.com/
+homepage=http://www.milieuinfo.be/
 category=Plugins
 icon=icon.png
 # experimental flag
