@@ -25,6 +25,16 @@
         <source>Layer {0} will be added to layer {1}</source>
         <translation type="obsolete">Laag {0} zal toegevoegd worden aan {1}</translation>
     </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="110"/>
+        <source>Geometries don&apos;t match</source>
+        <translation>Geometrietypes komen niet overeen</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="110"/>
+        <source>The geometries of inputlayer and targerlayer don&apos;t match, so the files can&apos;t be merged</source>
+        <translation>Het geometrietype van de inputlaag en de doellaag komen niet overeen, hierdoor kunnen de bestanden niet samngevoegd worden</translation>
+    </message>
 </context>
 <context>
     <name>mergeLayersDialogBase</name>

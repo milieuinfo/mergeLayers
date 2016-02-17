@@ -106,6 +106,12 @@ class mergeLayersDialog(QtGui.QDialog):
         if not sourceLyr or not targetLyr:
             return
 
+        if sourceLyr.geometryType() != targetLyr.geometryType():
+            QtGui.QMessageBox.warning( self.parent(),
+                self.tr("Geometries don't match"),
+                self.tr("The geometries of inputlayer and targerlayer don't match, so the files can't be merged") )
+            return
+
         fieldMap = self.table2fieldMap()
         newFeats = []
 
@@ -121,3 +127,4 @@ class mergeLayersDialog(QtGui.QDialog):
 
         targetLyr.dataProvider().addFeatures(newFeats)
         self.iface.mapCanvas().refresh()
+
