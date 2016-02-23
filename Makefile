@@ -7,7 +7,7 @@ SOURCES = \
 
 FORMS = ui_mergeLayers_dialog.ui
 #----
-PLUGINNAME = mergeLayers
+PLUGINNAME = merge_Layers
 
 PY_FILES = \
 	__init__.py \

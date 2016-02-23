@@ -31,7 +31,7 @@ repository=https://github.com/milieuinfo/mergeLayers
 tags=lne, merge, append, combine
 
 homepage=http://www.milieuinfo.be/
-category=Plugins
+category=Vector
 icon=icon.png
 # experimental flag
 experimental=False
