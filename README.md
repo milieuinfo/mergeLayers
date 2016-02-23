@@ -17,4 +17,7 @@ Je moet de overeenkomstige velden tussen de inputlaag en de doellaag ingeven in 
 
 Als je op OK klikt wordt de inputlaag aan de doellaag toegevoegd. 
 
-![](images/Merge_Layers.png)
+<video width="320" height="240" controls>
+  <source src="images/mergelayers.mp4" type="video/mp4">
+  
+</video>
