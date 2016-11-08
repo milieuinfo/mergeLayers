@@ -11,7 +11,7 @@ PLUGINNAME = merge_Layers
 
 PY_FILES = \
 	__init__.py \
-	mergeLayers.py mergeLayers_dialog.py
+	mergeLayers.py mergeLayers_dialog.py utils.py
 
 UI_FILES = ui_mergeLayers_dialog.py
 

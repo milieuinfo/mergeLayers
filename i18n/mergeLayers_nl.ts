@@ -18,7 +18,7 @@
     <message>
         <location filename="mergeLayers_dialog.py" line="20"/>
         <source>&lt;no match&gt;</source>
-        <translation>&lt;geen match&gt;</translation>
+        <translation type="obsolete">&lt;geen match&gt;</translation>
     </message>
     <message>
         <location filename="mergeLayers_dialog.py" line="48"/>
@@ -26,14 +26,49 @@
         <translation type="obsolete">Laag {0} zal toegevoegd worden aan {1}</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="110"/>
+        <location filename="mergeLayers_dialog.py" line="132"/>
         <source>Geometries don&apos;t match</source>
         <translation>Geometrietypes komen niet overeen</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="110"/>
+        <location filename="mergeLayers_dialog.py" line="132"/>
         <source>The geometries of inputlayer and targerlayer don&apos;t match, so the files can&apos;t be merged</source>
         <translation>Het geometrietype van de inputlaag en de doellaag komen niet overeen, hierdoor kunnen de bestanden niet samngevoegd worden</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="184"/>
+        <source>Save As</source>
+        <translation>Opslaan als</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="127"/>
+        <source>Warning</source>
+        <translation>Waarschuwing</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="116"/>
+        <source>Layers are not set correctly</source>
+        <translation>Lagen zijn niet correct ingesteld</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="127"/>
+        <source>Target is not editable, try merge to new layer</source>
+        <translation>Doel laag is niet bewerkbaar</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="138"/>
+        <source>Need a output location</source>
+        <translation>Geen output locatie opgegeven</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="138"/>
+        <source>Define a output location on for the merged layer by clicking on the &apos;File&apos;-button</source>
+        <translation>Geef een output locatie op voor de samen te voegen laag door te klikken op de &apos;Bestand&apos; knop</translation>
+    </message>
+    <message>
+        <location filename="mergeLayers_dialog.py" line="121"/>
+        <source>Target and source are the same.</source>
+        <translation>Doel en bron zijn dezelfde.</translation>
     </message>
 </context>
 <context>
@@ -54,17 +89,17 @@
         <translation>Doel laag</translation>
     </message>
     <message>
-        <location filename="ui_mergeLayers_dialog.ui" line="64"/>
+        <location filename="ui_mergeLayers_dialog.ui" line="138"/>
         <source>Match Fields</source>
         <translation>Overeenkomstige Velden </translation>
     </message>
     <message>
-        <location filename="ui_mergeLayers_dialog.ui" line="80"/>
+        <location filename="ui_mergeLayers_dialog.ui" line="154"/>
         <source>Field in the targetlayer</source>
         <translation>Veld in de doellaag</translation>
     </message>
     <message>
-        <location filename="ui_mergeLayers_dialog.ui" line="85"/>
+        <location filename="ui_mergeLayers_dialog.ui" line="159"/>
         <source>Field in the inputlayer</source>
         <translation>Veld in de inputlaag</translation>
     </message>
@@ -72,6 +107,31 @@
         <location filename="ui_mergeLayers_dialog.ui" line="14"/>
         <source>Merge layers</source>
         <translation>Lagen samenvoegen</translation>
+    </message>
+    <message>
+        <location filename="ui_mergeLayers_dialog.ui" line="58"/>
+        <source>Output</source>
+        <translation>Output</translation>
+    </message>
+    <message>
+        <location filename="ui_mergeLayers_dialog.ui" line="70"/>
+        <source>Add to target layer</source>
+        <translation>Voeg toe aan doellaag</translation>
+    </message>
+    <message>
+        <location filename="ui_mergeLayers_dialog.ui" line="86"/>
+        <source>Merge into new layer</source>
+        <translation>Voeg samen naar nieuwe laag</translation>
+    </message>
+    <message>
+        <location filename="ui_mergeLayers_dialog.ui" line="107"/>
+        <source>Merged file</source>
+        <translation>Samengevoegd bestand </translation>
+    </message>
+    <message>
+        <location filename="ui_mergeLayers_dialog.ui" line="120"/>
+        <source>File</source>
+        <translation>Bestand</translation>
     </message>
 </context>
 </TS>

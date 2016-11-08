@@ -2,22 +2,27 @@
 from PyQt4 import QtGui, QtCore
 from qgis.core import *
 from ui_mergeLayers_dialog import Ui_mergeLayersDialogBase
-import os
+import os, utils
+
+
+# noinspection PyUnresolvedReferences
 class mergeLayersDialog(QtGui.QDialog):
 
     def __init__(self, iface,  parent=None):
         QtGui.QDialog.__init__(self, parent)
 
+        self.parent = parent
         self.plugin_dir = os.path.dirname(__file__)
+
         # initialize locale
-        locale = QtCore.QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(self.plugin_dir, 'i18n', "mergeLayers_{}.qm".format(locale))
-        if os.path.exists(locale_path):
+        locale = QtCore.QSettings().value("locale/userLocale", "en")[0:2]
+        localePath = os.path.join(os.path.dirname(__file__), 'i18n', 'geopunt4qgis_{}.qm'.format(locale))
+        if os.path.exists(localePath):
             self.translator = QtCore.QTranslator()
-            self.translator.load(locale_path)
+            self.translator.load(localePath)
             QtCore.QCoreApplication.installTranslator(self.translator)
 
-        self.NOMATCH  =  self.tr("<no match>")
+        self.NOMATCH  = "<no match>"
 
         self.ui = Ui_mergeLayersDialogBase()
         self.ui.setupUi(self)
@@ -26,8 +31,10 @@ class mergeLayersDialog(QtGui.QDialog):
         self.updateLayers()
         self._initGui()
 
-    def tr(self, message):
-        return QCoreApplication.translate('mergeLayers', message)
+    def tr(self, message, **kwargs):
+        trans = QtCore.QCoreApplication.translate('mergeLayers', message)
+        if trans: return trans
+        else: return message
 
     def _initGui(self):
         self.ui.matchTbl.setColumnWidth(0, 120)
@@ -37,6 +44,7 @@ class mergeLayersDialog(QtGui.QDialog):
         self.iface.mapCanvas().layersChanged.connect(self.updateLayers)
         self.ui.sourceCbx.currentIndexChanged.connect( self.updateMatchWidget )
         self.ui.targetCbx.currentIndexChanged.connect( self.updateMatchWidget )
+        self.ui.outputFileBtn.clicked.connect(self.setOutput)
         self.accepted.connect(self.executeMerge)
 
     def updateMatchWidget(self):
@@ -61,7 +69,8 @@ class mergeLayersDialog(QtGui.QDialog):
         for field in sourceFields:
             sourceName = field.name()
             sourceType = field.type()
-            targetFields = [self.NOMATCH] + [f.name() for f in targetLyr.pendingFields() if f.type() == sourceType]
+            targetFields = [self.NOMATCH] + [f.name() for f in targetLyr.pendingFields()
+                                                      if f.type() == sourceType ]
             targetFieldCbx = QtGui.QComboBox()
             targetFieldCbx.insertItems(0, targetFields)
 
@@ -104,27 +113,81 @@ class mergeLayersDialog(QtGui.QDialog):
                 targetLyr = lyr
 
         if not sourceLyr or not targetLyr:
+            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
+                                      self.tr("Layers are not set correctly"), '')
+            return
+
+        if  sourceLyr == targetLyr:
+            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
+                                      self.tr("Target and source are the same."), '')
+            return
+
+
+        if self.ui.add2targetRadio.isChecked() and not targetLyr.isEditable():
+            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
+                                      self.tr("Target is not editable, try merge to new layer"), '')
             return
 
         if sourceLyr.geometryType() != targetLyr.geometryType():
-            QtGui.QMessageBox.warning( self.parent(),
-                self.tr("Geometries don't match"),
-                self.tr("The geometries of inputlayer and targerlayer don't match, so the files can't be merged") )
+            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Geometries don't match"),
+                                      self.tr(
+                                          "The geometries of inputlayer and targerlayer don't match, so the files can't be merged"), '')
             return
 
-        fieldMap = self.table2fieldMap()
-        newFeats = []
+        if self.ui.merge2newRadio.isChecked() and len( self.ui.outputFileTxt.text() ) == 0:
+            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Need a output location"),
+                                      self.tr(
+                                          "Define a output location on for the merged layer by clicking on the 'File'-button"), '')
+            return
 
+
+        if self.ui.add2targetRadio.isChecked():
+            self.addsource2target(sourceLyr, targetLyr)
+        else:
+            self.mergeSourceAndTarget(sourceLyr, targetLyr)
+
+        self.refresh(targetLyr)
+
+    def addsource2target(self, sourceLyr, targetLyr):
+        newFeats = []
+        fieldMap = self.table2fieldMap()
+        targetType = targetLyr.dataProvider().storageType()
+
+        targetLyr.beginEditCommand("Starting to append..")  # use editbuffer
         for sourceFeat in sourceLyr.getFeatures():
             newFeat = QgsFeature(targetLyr.pendingFields())
 
             for targetField, sourceField in fieldMap:
-                if targetField != self.NOMATCH:
-                    newFeat[targetField] = sourceFeat[sourceField]
+                if targetType == "ESRI Shapefile":
+                    targetField = utils.nameMaxLenght( targetField , 10)
 
-            newFeat.setGeometry( sourceFeat.geometry() )
+                if targetField != self.NOMATCH:
+                    newFeat.setAttribute(targetField, sourceFeat[sourceField])
+
+            newFeat.setGeometry(sourceFeat.geometry())
             newFeats.append(newFeat)
 
-        targetLyr.dataProvider().addFeatures(newFeats)
-        self.iface.mapCanvas().refresh()
+            if len(newFeats) > 5000:  # append in blocks of 5000 the speed up.
+                targetLyr.dataProvider().addFeatures(newFeats)
+                newFeats = []
+        targetLyr.dataProvider().addFeatures(newFeats)  # add remaining
+        targetLyr.endEditCommand()
 
+    def mergeSourceAndTarget(self, source, target):
+        fpath = self.ui.outputFileTxt.text()
+        newlayer = utils.copyLayer(fpath, target)
+        QgsMapLayerRegistry.instance().addMapLayer( newlayer )
+        self.addsource2target(source, newlayer)
+
+    def setOutput(self):
+        home = os.path.expanduser('~')
+        title = self.tr(u"Save As")
+        ftypeFilter = "Shapefile (*.shp);;Geopackage (*.gpkg);;GeoJSON (*.geojson);;Mapinfo (*.tab);;GML ($.gml);;SQLITE (*.sqlite)"
+        outFile = QtGui.QFileDialog.getSaveFileName( self, title, filter=ftypeFilter, directory=home )
+        self.ui.outputFileTxt.setText(outFile)
+
+    def refresh(self, layer=None):
+        if self.iface.mapCanvas().isCachingEnabled() and isinstance(layer, QgsVectorLayer):
+            layer.setCacheImage(None)
+        else:
+            self.iface.mapCanvas().refresh()

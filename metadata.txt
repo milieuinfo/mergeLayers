@@ -8,10 +8,10 @@
 # Mandatory items:
 
 [general]
-name=Merge_Layers
+name=merge_Layers
 qgisMinimumVersion=2.8
 description=Merge 2 layers and attribute tables even if the attributes have different names.
-version=0.1
+version=0.3
 author=Kay Warrie
 email=kaywarrie@gmail.com
 
