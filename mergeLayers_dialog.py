@@ -15,11 +15,11 @@ class mergeLayersDialog(QtGui.QDialog):
         self.plugin_dir = os.path.dirname(__file__)
 
         # initialize locale
-        locale = QtCore.QSettings().value("locale/userLocale", "en")[0:2]
-        localePath = os.path.join(os.path.dirname(__file__), 'i18n', 'geopunt4qgis_{}.qm'.format(locale))
-        if os.path.exists(localePath):
+        locale = QtCore.QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(self.plugin_dir, 'i18n', 'mergeLayers_{}.qm'.format(locale))
+        if os.path.exists(locale_path):
             self.translator = QtCore.QTranslator()
-            self.translator.load(localePath)
+            self.translator.load(locale_path)
             QtCore.QCoreApplication.installTranslator(self.translator)
 
         self.NOMATCH  = "<no match>"
@@ -33,7 +33,7 @@ class mergeLayersDialog(QtGui.QDialog):
 
     def tr(self, message, **kwargs):
         trans = QtCore.QCoreApplication.translate('mergeLayers', message)
-        if trans: return trans
+        if isinstance( trans, str ): return trans
         else: return message
 
     def _initGui(self):
@@ -41,7 +41,7 @@ class mergeLayersDialog(QtGui.QDialog):
         self.ui.matchTbl.setColumnWidth(1, 120)
 
         #ADD EVENTS
-        self.iface.mapCanvas().layersChanged.connect(self.updateLayers)
+        self.iface.mapCanvas().layersChanged.connect( self.updateLayers )
         self.ui.sourceCbx.currentIndexChanged.connect( self.updateMatchWidget )
         self.ui.targetCbx.currentIndexChanged.connect( self.updateMatchWidget )
         self.ui.outputFileBtn.clicked.connect(self.setOutput)
@@ -122,8 +122,7 @@ class mergeLayersDialog(QtGui.QDialog):
                                       self.tr("Target and source are the same."), '')
             return
 
-
-        if self.ui.add2targetRadio.isChecked() and not targetLyr.isEditable():
+        if self.ui.add2targetRadio.isChecked() and not (targetLyr.dataProvider().capabilities() & QgsVectorDataProvider.AddFeatures):
             QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
                                       self.tr("Target is not editable, try merge to new layer"), '')
             return

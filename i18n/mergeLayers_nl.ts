@@ -26,22 +26,22 @@
         <translation type="obsolete">Laag {0} zal toegevoegd worden aan {1}</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="132"/>
+        <location filename="mergeLayers_dialog.py" line="131"/>
         <source>Geometries don&apos;t match</source>
         <translation>Geometrietypes komen niet overeen</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="132"/>
+        <location filename="mergeLayers_dialog.py" line="131"/>
         <source>The geometries of inputlayer and targerlayer don&apos;t match, so the files can&apos;t be merged</source>
         <translation>Het geometrietype van de inputlaag en de doellaag komen niet overeen, hierdoor kunnen de bestanden niet samngevoegd worden</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="184"/>
+        <location filename="mergeLayers_dialog.py" line="183"/>
         <source>Save As</source>
         <translation>Opslaan als</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="127"/>
+        <location filename="mergeLayers_dialog.py" line="126"/>
         <source>Warning</source>
         <translation>Waarschuwing</translation>
     </message>
@@ -51,17 +51,17 @@
         <translation>Lagen zijn niet correct ingesteld</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="127"/>
+        <location filename="mergeLayers_dialog.py" line="126"/>
         <source>Target is not editable, try merge to new layer</source>
         <translation>Doel laag is niet bewerkbaar</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="138"/>
+        <location filename="mergeLayers_dialog.py" line="137"/>
         <source>Need a output location</source>
         <translation>Geen output locatie opgegeven</translation>
     </message>
     <message>
-        <location filename="mergeLayers_dialog.py" line="138"/>
+        <location filename="mergeLayers_dialog.py" line="137"/>
         <source>Define a output location on for the merged layer by clicking on the &apos;File&apos;-button</source>
         <translation>Geef een output locatie op voor de samen te voegen laag door te klikken op de &apos;Bestand&apos; knop</translation>
     </message>

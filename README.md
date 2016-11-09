@@ -17,7 +17,7 @@ Met deze tool kan je 2 lagen samenvoegen wanneer de namen van overeenkomstige at
 
 - De input laag wordt toegevoegd aan de data in de doel laag, als *"Voeg toe aan doellaag"* aanvinkt is.
 - Er wordt een nieuwe laag aangemaakt indien *"Voeg samen naar nieuwe laag"* aangevinkt is.
-- Je moet de overeenkomstige velden tussen de inputlaag en de doellaag ingeven in de onderstaande tabel. 
+- Je moet de overeenkomstige velden tussen de inputlaag en de doellaag ingeven in de onderstaande tabel. De eerste bevat alle velden in bronlaag, in de 2de rij kan je instellen  naar welke kolom in de doellaag geschreven moet worden. 
 - Als je op OK klikt wordt bwerking uitgevoerd. 
 
 ![](images/merge_Layers.gif)
