@@ -15,11 +15,11 @@ class mergeLayersDialog(QtGui.QDialog):
         self.plugin_dir = os.path.dirname(__file__)
 
         # initialize locale
-        locale = QtCore.QSettings().value("locale/userLocale", "en")[0:2]
-        localePath = os.path.join(os.path.dirname(__file__), 'i18n', 'geopunt4qgis_{}.qm'.format(locale))
-        if os.path.exists(localePath):
+        locale = QtCore.QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(self.plugin_dir, 'i18n', 'mergeLayers_{}.qm'.format(locale))
+        if os.path.exists(locale_path):
             self.translator = QtCore.QTranslator()
-            self.translator.load(localePath)
+            self.translator.load(locale_path)
             QtCore.QCoreApplication.installTranslator(self.translator)
 
         self.NOMATCH  = "<no match>"
@@ -31,21 +31,56 @@ class mergeLayersDialog(QtGui.QDialog):
         self.updateLayers()
         self._initGui()
 
-    def tr(self, message, **kwargs):
+    def trans(self, message, **kwargs):
         trans = QtCore.QCoreApplication.translate('mergeLayers', message)
-        if trans: return trans
+        if isinstance( trans, str ): return trans
         else: return message
+
+    def accept(self):
+        sourceLyr, targetLyr = (None,None)
+        for lyr in self.layers:
+            if lyr.name() ==  self.ui.sourceCbx.currentText():
+                sourceLyr = lyr
+            if lyr.name() ==  self.ui.targetCbx.currentText():
+                targetLyr = lyr
+
+        if not sourceLyr or not targetLyr:
+            QtGui.QMessageBox.warning(self, self.trans("Warning"),
+                                      self.trans("Layers are not set correctly"), '')
+            return
+        if  sourceLyr == targetLyr:
+            QtGui.QMessageBox.warning(self, self.trans("Warning"),
+                                      self.trans("Target and source are the same."), '')
+            return
+        if self.ui.add2targetRadio.isChecked() and not (targetLyr.dataProvider().capabilities() & QgsVectorDataProvider.AddFeatures):
+            QtGui.QMessageBox.warning(self, self.trans("Warning"),
+                                      self.trans("Target is not editable, try merge to new layer"), '')
+            return
+        if sourceLyr.geometryType() != targetLyr.geometryType():
+            QtGui.QMessageBox.warning(self, self.trans("Geometries don't match"),
+                                      self.trans("The geometries of inputlayer and targerlayer don't match, so the files can't be merged"), '')
+            return
+        if self.ui.merge2newRadio.isChecked() and len( self.ui.outputFileTxt.text() ) == 0:
+            QtGui.QMessageBox.warning(self, self.trans("Need a output location"),
+                                      self.trans("Define a output location on for the merged layer by clicking on the 'File'-button"), '')
+            return
+
+        if self.ui.add2targetRadio.isChecked():
+            self.addsource2target(sourceLyr, targetLyr)
+        else:
+            self.mergeSourceAndTarget(sourceLyr, targetLyr)
+        self.refresh(targetLyr)
+        self.close()
 
     def _initGui(self):
         self.ui.matchTbl.setColumnWidth(0, 120)
         self.ui.matchTbl.setColumnWidth(1, 120)
 
         #ADD EVENTS
-        self.iface.mapCanvas().layersChanged.connect(self.updateLayers)
+        self.iface.mapCanvas().layersChanged.connect( self.updateLayers )
         self.ui.sourceCbx.currentIndexChanged.connect( self.updateMatchWidget )
         self.ui.targetCbx.currentIndexChanged.connect( self.updateMatchWidget )
         self.ui.outputFileBtn.clicked.connect(self.setOutput)
-        self.accepted.connect(self.executeMerge)
 
     def updateMatchWidget(self):
         sourceLyrName = self.ui.sourceCbx.currentText()
@@ -70,7 +105,7 @@ class mergeLayersDialog(QtGui.QDialog):
             sourceName = field.name()
             sourceType = field.type()
             targetFields = [self.NOMATCH] + [f.name() for f in targetLyr.pendingFields()
-                                                      if f.type() == sourceType ]
+                                                      if f.type() == sourceType or sourceType == 10 ]
             targetFieldCbx = QtGui.QComboBox()
             targetFieldCbx.insertItems(0, targetFields)
 
@@ -103,51 +138,6 @@ class mergeLayersDialog(QtGui.QDialog):
             fieldMap.append(( targetField, sourceField ))
         return fieldMap
 
-    def executeMerge(self):
-        sourceLyr = None
-        targetLyr = None
-        for lyr in self.layers:
-            if lyr.name() ==  self.ui.sourceCbx.currentText():
-                sourceLyr = lyr
-            if lyr.name() ==  self.ui.targetCbx.currentText():
-                targetLyr = lyr
-
-        if not sourceLyr or not targetLyr:
-            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
-                                      self.tr("Layers are not set correctly"), '')
-            return
-
-        if  sourceLyr == targetLyr:
-            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
-                                      self.tr("Target and source are the same."), '')
-            return
-
-
-        if self.ui.add2targetRadio.isChecked() and not targetLyr.isEditable():
-            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Warning"),
-                                      self.tr("Target is not editable, try merge to new layer"), '')
-            return
-
-        if sourceLyr.geometryType() != targetLyr.geometryType():
-            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Geometries don't match"),
-                                      self.tr(
-                                          "The geometries of inputlayer and targerlayer don't match, so the files can't be merged"), '')
-            return
-
-        if self.ui.merge2newRadio.isChecked() and len( self.ui.outputFileTxt.text() ) == 0:
-            QtGui.QMessageBox.warning(self.iface.mainWindow(), self.tr("Need a output location"),
-                                      self.tr(
-                                          "Define a output location on for the merged layer by clicking on the 'File'-button"), '')
-            return
-
-
-        if self.ui.add2targetRadio.isChecked():
-            self.addsource2target(sourceLyr, targetLyr)
-        else:
-            self.mergeSourceAndTarget(sourceLyr, targetLyr)
-
-        self.refresh(targetLyr)
-
     def addsource2target(self, sourceLyr, targetLyr):
         newFeats = []
         fieldMap = self.table2fieldMap()
@@ -162,7 +152,7 @@ class mergeLayersDialog(QtGui.QDialog):
                     targetField = utils.nameMaxLenght( targetField , 10)
 
                 if targetField != self.NOMATCH:
-                    newFeat.setAttribute(targetField, sourceFeat[sourceField])
+                        newFeat.setAttribute(targetField, sourceFeat[sourceField])
 
             newFeat.setGeometry(sourceFeat.geometry())
             newFeats.append(newFeat)
@@ -181,7 +171,7 @@ class mergeLayersDialog(QtGui.QDialog):
 
     def setOutput(self):
         home = os.path.expanduser('~')
-        title = self.tr(u"Save As")
+        title = self.trans(u"Save As")
         ftypeFilter = "Shapefile (*.shp);;Geopackage (*.gpkg);;GeoJSON (*.geojson);;Mapinfo (*.tab);;GML ($.gml);;SQLITE (*.sqlite)"
         outFile = QtGui.QFileDialog.getSaveFileName( self, title, filter=ftypeFilter, directory=home )
         self.ui.outputFileTxt.setText(outFile)
